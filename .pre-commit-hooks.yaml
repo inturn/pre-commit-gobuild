@@ -1,0 +1,20 @@
+-   id: go-build
+    name: go build check
+    entry: go-build
+    language: golang
+    description: Runs go build, requires golang
+-   id: go-test
+    name: go test check
+    entry: go-test
+    language: golang
+    description: Runs go testing, requires golang
+-   id: errcheck
+    name: go error check
+    entry: go-errcheck
+    language: golang
+    description: Runs error checker, requires golang
+-   id: dockercheck
+    name:  dockerheck
+    entry: go-dockercheck
+    language: golang
+    description: Runs Dockfile checking tool, requires golang
