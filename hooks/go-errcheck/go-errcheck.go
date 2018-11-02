@@ -24,7 +24,7 @@ var abspath bool
 type ignoreFlag map[string]*regexp.Regexp
 
 func main() {
-	os.Exit(mainCmd([]string{"errcheck", "./...", "-blank", "-asserts", "-ignoregenerated"}))
+	os.Exit(mainCmd([]string{"errcheck", "-blank", "-asserts", "-ignoregenerated", "./..."}))
 }
 
 func (f ignoreFlag) String() string {

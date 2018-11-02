@@ -20,6 +20,6 @@
     description: Runs goimports tool
 -   id: dockercheck
     name: dockerheck
-    entry: go-dockercheck
+    entry: dockercheck
     language: golang
     description: Runs Dockfile checking tool, requires golang
