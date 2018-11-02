@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"github.com/inturn/pre-commit-gobuild/internal/helpers"
 )
@@ -14,26 +15,26 @@ func main() {
 		log.Fatal(err)
 	}
 
-	wd, err := os.Getwd()
+	workDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
-	dirs := helpers.DirsWith(wd, "\\.go$")
+	dirs := helpers.DirsWith(workDir, "\\.go$")
 
-	errs := make([]error, 0)
+	wg := &sync.WaitGroup{}
 
-	for _, d := range dirs {
-		if !strings.Contains(d, "/vendor/") {
-			relPath := strings.Replace(d, wd, ".", 1)
-			cmd := exec.Command("goimports", "-w", "-l", relPath)
-			if _, err := cmd.Output(); err != nil {
-				log.Println(err)
-				errs = append(errs, err)
+	for _, dir := range dirs {
+		go func(d, wd string) {
+			wg.Add(1)
+			defer wg.Done()
+			if !strings.Contains(d, "/vendor/") {
+				relPath := strings.Replace(d, wd, ".", 1)
+				cmd := exec.Command("goimports", "-w", "-l", relPath)
+				if _, err := cmd.Output(); err != nil {
+					log.Printf("error occured on goimports execute: %s\n", err)
+				}
 			}
-		}
+		}(dir, workDir)
 	}
-
-	if len(errs) != 0 {
-		log.Fatal(errs)
-	}
+	wg.Wait()
 }
