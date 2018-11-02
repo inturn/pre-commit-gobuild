@@ -8,13 +8,18 @@
     entry: go-test
     language: golang
     description: Runs go testing, requires golang
--   id: errcheck
+-   id: go-errcheck
     name: go error check
     entry: go-errcheck
     language: golang
     description: Runs error checker, requires golang
+-   id: go-goimports
+    name: goimports check
+    entry: go-goimports
+    language: golang
+    description: Runs goimports tool
 -   id: dockercheck
-    name:  dockerheck
+    name: dockerheck
     entry: go-dockercheck
     language: golang
     description: Runs Dockfile checking tool, requires golang
