@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/yramanovich/dockerfile-check/parser/command"
+	"github.com/inturn/pre-commit-gobuild/internal/dockerfile/command"
 )
 
 // Node is a structure used to represent a parse tree.
