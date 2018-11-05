@@ -23,3 +23,8 @@
     entry: dockercheck
     language: golang
     description: Runs Dockfile checking tool, requires golang
+-   id: composecheck
+    name: composecheck
+    entry: composecheck
+    language: golang
+    description: Checks docker-compose.yml files

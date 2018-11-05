@@ -48,12 +48,12 @@ func main() {
 		f, err := os.Open(f)
 		if err != nil {
 			errs = append(errs, err)
-			return
+			continue
 		}
 		node, err := parser.Parse(f, &directive)
 		if err != nil {
 			errs = append(errs, err)
-			return
+			continue
 		}
 		for _, n := range node.Children {
 			v := strings.ToUpper(n.Value)
