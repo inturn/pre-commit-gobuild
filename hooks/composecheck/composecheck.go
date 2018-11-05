@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 
@@ -13,10 +12,6 @@ import (
 )
 
 func main() {
-	// required dependency
-	if _, err := exec.Command("go", "get", "-v", "gopkg.in/yaml.v2").Output(); err != nil {
-		log.Fatal(err)
-	}
 	wd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)

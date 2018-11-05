@@ -11,10 +11,6 @@ import (
 )
 
 func main() {
-	if _, err := exec.Command("go", "get", "-u", "-v", "golang.org/x/tools/cmd/goimports").Output(); err != nil {
-		log.Fatal(err)
-	}
-
 	workDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
