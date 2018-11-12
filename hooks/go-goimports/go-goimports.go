@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -20,14 +22,22 @@ func main() {
 	wg := &sync.WaitGroup{}
 
 	for _, dir := range dirs {
+		wg.Add(1)
 		go func(d, wd string) {
-			wg.Add(1)
 			defer wg.Done()
 			if !strings.Contains(d, "/vendor/") {
-				relPath := strings.Replace(d, wd, ".", 1)
-				cmd := exec.Command("goimports", "-w", "-l", relPath)
-				if _, err := cmd.Output(); err != nil {
-					log.Printf("error occured on goimports execute: %s\n", err)
+				files, err := ioutil.ReadDir(d)
+				if err != nil {
+					log.Printf("error occured on read dir %s: %s", d, err)
+				}
+				for _, f := range files {
+					if !strings.HasSuffix(f.Name(), ".go") {
+						continue
+					}
+					cmd := exec.Command("goimports", "-w", "-l", fmt.Sprintf("%s/%s", d, f.Name()))
+					if _, err := cmd.Output(); err != nil {
+						log.Printf("error occured on goimports execute: %s\n", err)
+					}
 				}
 			}
 		}(dir, workDir)
