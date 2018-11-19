@@ -21,7 +21,7 @@ func main() {
 
 	filepath.Walk(wd, func(path string, f os.FileInfo, _ error) error {
 		if !f.IsDir() {
-			r, err := regexp.MatchString(`^docker-compose\\.yml$`, f.Name())
+			r, err := regexp.MatchString(`^docker-compose\.yml$`, f.Name())
 			if err == nil && r {
 				composeFiles = append(composeFiles, path)
 			}
