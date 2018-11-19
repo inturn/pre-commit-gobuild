@@ -57,7 +57,7 @@ func main() {
 
 		for _, svc := range dckComp.Services {
 			if m, err := regexp.MatchString(`(?i)^\s*.*:latest\s*$`, svc.Image); err != nil || m {
-				errs = append(errs, fmt.Errorf("image should not use the latest tag: %s", f.Name()))
+				errs = append(errs, fmt.Errorf("%s image should not use the latest tag: %s", f.Name(), svc.Image))
 			}
 		}
 	}
