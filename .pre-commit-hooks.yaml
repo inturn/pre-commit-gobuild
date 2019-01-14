@@ -18,6 +18,11 @@
     entry: go-goimports
     language: golang
     description: Runs goimports tool
+-   id: go-imports
+    name: imports check
+    entry: go-imports
+    language: golang
+    description: Runs own imports tool implementation
 -   id: dockercheck
     name: dockerheck
     entry: dockercheck
