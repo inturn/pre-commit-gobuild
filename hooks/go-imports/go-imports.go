@@ -75,24 +75,46 @@ func sortFileImports(path string) {
 }
 
 func sortImports(f *ast.File) {
+	if len(f.Imports) <= 1 {
+		return
+	}
+
 	imp1 := make(impSlice, 0)
 	imp2 := make(impSlice, 0)
 
 	for _, imp := range f.Imports {
-		var v, n string
-		v = imp.Path.Value
-		if imp.Name != nil {
-			n = imp.Name.Name
+		impData := importData{}
+
+		if imp.Doc != nil  && imp.Name != nil && imp.Name.Name == "_" {
+			impData.comment = imp.Doc.Text()
 		}
 
+		if imp.Name != nil {
+			impData.name = imp.Name.Name
+		}
+		impData.value = imp.Path.Value
+
 		// determine third-party package import
-		if strings.Contains(v, ".") {
-			imp2 = append(imp2, importData{v, n})
+		if strings.Contains(imp.Path.Value, ".") {
+			imp2 = append(imp2, impData)
 			continue
 		}
 
-		imp1 = append(imp1, importData{v, n})
+		imp1 = append(imp1, impData)
 	}
+
+
+	nonImportComment := f.Comments[:0]
+	startPos := f.Imports[0].Pos()
+	lastPos := f.Imports[len(f.Imports) - 1].End()
+
+	for _, c := range f.Comments {
+		if c.Pos() > lastPos || c.Pos() < startPos {
+			nonImportComment = append(nonImportComment, c)
+		}
+	}
+
+	f.Comments = nonImportComment
 
 	sort.Sort(imp1)
 	sort.Sort(imp2)
@@ -113,11 +135,7 @@ func sortImports(f *ast.File) {
 		d.Specs = d.Specs[:0]
 
 		for _, imp := range imp1 {
-			iSpec := ast.ImportSpec{
-				Path: &ast.BasicLit{Value: imp.value},
-				Name: &ast.Ident{Name: imp.name},
-			}
-			d.Specs = append(d.Specs, &iSpec)
+			addISpec(imp, d)
 		}
 
 		if len(imp2) != 0 {
@@ -125,14 +143,28 @@ func sortImports(f *ast.File) {
 			d.Specs = append(d.Specs, &ast.ImportSpec{Path: &ast.BasicLit{}})
 
 			for _, imp := range imp2 {
-				iSpec := ast.ImportSpec{
-					Path: &ast.BasicLit{Value: imp.value},
-					Name: &ast.Ident{Name: imp.name},
-				}
-				d.Specs = append(d.Specs, &iSpec)
+				addISpec(imp, d)
+
 			}
 		}
 	}
+}
+
+func addISpec(imp importData, d *ast.GenDecl)  {
+	if imp.name == "_" {
+		comm := imp.comment
+		if comm == "" {
+			comm = "todo comment here why do you use blank import"
+		}
+		d.Specs = append(d.Specs, &ast.ImportSpec{
+			Path: &ast.BasicLit{ Value: "// " + strings.TrimSpace(comm) },
+		})
+	}
+	iSpec := ast.ImportSpec{
+		Path: &ast.BasicLit{Value: imp.value},
+		Name: &ast.Ident{Name: imp.name},
+	}
+	d.Specs = append(d.Specs, &iSpec)
 }
 
 type impSlice []importData
@@ -140,6 +172,7 @@ type impSlice []importData
 type importData struct {
 	value string
 	name  string
+	comment string
 }
 
 func (s impSlice) Len() int {
