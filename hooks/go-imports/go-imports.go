@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/inturn/pre-commit-gobuild/internal/helpers"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -13,10 +12,11 @@ import (
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/inturn/pre-commit-gobuild/internal/helpers"
 )
 
 func main() {
-	//sortFileImports("/Users/yramanovich/GolandProjects/productservice/maintenance/infrastructure/http.go")
 	workDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
