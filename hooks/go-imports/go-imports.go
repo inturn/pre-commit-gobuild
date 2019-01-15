@@ -134,10 +134,8 @@ func sortImports(f *ast.File) {
 
 		d.Specs = d.Specs[:0]
 
-		mainPackage := f.Name.String() == "main"
-
 		for _, imp := range imp1 {
-			addISpec(imp, d, mainPackage)
+			addISpec(imp, d)
 		}
 
 		if len(imp2) != 0 {
@@ -145,25 +143,22 @@ func sortImports(f *ast.File) {
 			d.Specs = append(d.Specs, &ast.ImportSpec{Path: &ast.BasicLit{}})
 
 			for _, imp := range imp2 {
-				addISpec(imp, d, mainPackage)
+				addISpec(imp, d)
 
 			}
 		}
 	}
 }
 
-func addISpec(imp importData, d *ast.GenDecl, mainPkg bool)  {
-	// skip package main
-	if !mainPkg {
-		if imp.name == "_" {
-			comm := imp.comment
-			if comm == "" {
-				comm = "todo comment here why do you use blank import"
-			}
-			d.Specs = append(d.Specs, &ast.ImportSpec{
-				Path: &ast.BasicLit{ Value: "// " + strings.TrimSpace(comm) },
-			})
+func addISpec(imp importData, d *ast.GenDecl)  {
+	if imp.name == "_" {
+		comm := imp.comment
+		if comm == "" {
+			comm = "todo comment here why do you use blank import"
 		}
+		d.Specs = append(d.Specs, &ast.ImportSpec{
+			Path: &ast.BasicLit{ Value: "// " + strings.TrimSpace(comm) },
+		})
 	}
 	iSpec := ast.ImportSpec{
 		Path: &ast.BasicLit{Value: imp.value},
