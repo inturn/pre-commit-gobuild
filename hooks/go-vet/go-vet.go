@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 	"os/exec"
 	"runtime"
 	"strconv"
@@ -14,22 +13,16 @@ func main() {
 
 	ver, err := strconv.ParseFloat(verStr, 64)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
-
-	var arg []string
 
 	if ver < 1.12 {
-		arg = []string{"tool", "vet", "./..."}
-	} else {
-		arg = []string{"vet", "./..."}
+		log.Fatalf("Update your go version. %f --> 1.12+", ver)
 	}
 
-	cmd := exec.Command("go", arg...)
+	cmd := exec.Command("go", "vet", "./...")
 	res, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(string(res))
-		os.Exit(1)
+		log.Fatal(string(res))
 	}
 }
