@@ -23,6 +23,11 @@
     entry: go-imports
     language: golang
     description: Runs own imports tool implementation
+-   id: go-vet
+    name: go vet check
+    entry: go-vet
+    language: golang
+    description: Runs own go vet tool implementation
 -   id: dockercheck
     name: dockerheck
     entry: dockercheck
