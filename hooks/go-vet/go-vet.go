@@ -4,20 +4,14 @@ import (
 	"log"
 	"os/exec"
 	"runtime"
-	"strconv"
 	"strings"
 )
 
 func main() {
 	verStr := strings.TrimPrefix(runtime.Version(), "go")
 
-	ver, err := strconv.ParseFloat(verStr, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if ver < 1.12 {
-		log.Fatalf("Update your go version. %f --> 1.12+", ver)
+	if strings.Compare("1.12", verStr) == 1 {
+		log.Fatalf("Update your go version. %s --> 1.12+", verStr)
 	}
 
 	cmd := exec.Command("go", "vet", "./...")
