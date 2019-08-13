@@ -38,3 +38,8 @@
     entry: composecheck
     language: golang
     description: Checks docker-compose.yml files
+-   id: go-generate
+    name: go generate execution
+    entry: go-generate
+    language: golang
+    description: Runs go generate tool, requires golang
