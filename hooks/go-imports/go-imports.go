@@ -25,7 +25,8 @@ type lintError struct {
 }
 
 var (
-	checkOnly bool
+	errNotSorted = fmt.Errorf("file imports have to be sorted or formatted according to go.fmt")
+	checkOnly    bool
 )
 
 func init() {
@@ -68,6 +69,9 @@ func main() {
 
 	var le []lintError
 	for lintErr := range errc {
+		if !checkOnly && lintErr.err == errNotSorted {
+			continue
+		}
 		log.Println(lintErr.path, lintErr.err)
 		le = append(le, lintErr)
 	}
@@ -115,7 +119,7 @@ func sortFileImports(path string, errc chan<- lintError) {
 
 	if checkOnly {
 		errc <- lintError{
-			err: fmt.Errorf("file imports have to be sorted"),
+			err:  errNotSorted,
 			path: path,
 		}
 		return
@@ -128,10 +132,8 @@ func sortFileImports(path string, errc chan<- lintError) {
 		}
 		return
 	}
-	errc <- lintError{
-		err:  fmt.Errorf("file has changed"),
-		path: path,
-	}
+
+	log.Printf("%s file has changed", path)
 }
 
 func sortImports(f *ast.File) {
