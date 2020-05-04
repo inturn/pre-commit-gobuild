@@ -2,7 +2,8 @@ package main
 
 import (
 	"bytes"
-	"errors"
+	"flag"
+	"fmt"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -21,6 +22,15 @@ import (
 type lintError struct {
 	err  error
 	path string
+}
+
+var (
+	checkOnly bool
+)
+
+func init() {
+	flag.BoolVar(&checkOnly, "check-only", false, "linter only checks imports order and don't modify files")
+	flag.Parse()
 }
 
 func main() {
@@ -62,7 +72,7 @@ func main() {
 		le = append(le, lintErr)
 	}
 	if len(le) != 0 {
-		log.Println("files changed:", len(le))
+		log.Println("errors count:", len(le))
 		os.Exit(1)
 	}
 }
@@ -103,6 +113,14 @@ func sortFileImports(path string, errc chan<- lintError) {
 		return
 	}
 
+	if checkOnly {
+		errc <- lintError{
+			err: fmt.Errorf("file imports have to be sorted"),
+			path: path,
+		}
+		return
+	}
+
 	if err := ioutil.WriteFile(path, buf.Bytes(), 0664); err != nil {
 		errc <- lintError{
 			err:  err,
@@ -111,7 +129,7 @@ func sortFileImports(path string, errc chan<- lintError) {
 		return
 	}
 	errc <- lintError{
-		err:  errors.New("file has changed"),
+		err:  fmt.Errorf("file has changed"),
 		path: path,
 	}
 }
